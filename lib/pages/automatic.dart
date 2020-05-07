@@ -1,13 +1,57 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:web_socket_channel/io.dart';
+import 'package:flutter/material.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+import 'dart:io';
+import 'dart:convert';
 
 class Automatic extends StatelessWidget {
+  var data = "";
+  var width = "";
+  var hieght = "";
+
+  final channel = IOWebSocketChannel.connect("ws://203.150.107.176:17711");
+
+  web_socket() async {
+    var codec = new Utf8Codec();
+    List<int> dataToSend = codec.encode(data);
+    var addressesListenFrom = InternetAddress.anyIPv4;
+    int portListenOn = 17711;
+    RawDatagramSocket.bind(addressesListenFrom, portListenOn)
+        .then((RawDatagramSocket updSocket) {
+      updSocket.forEach((RawSocketEvent event) {
+        if (event == RawSocketEvent.read) {
+          Datagram dg = updSocket.receive();
+          dg.data.forEach((x) => print(x.toString()));
+        }
+      });
+      updSocket.send(dataToSend, new InternetAddress('203.150.107.176'), 17711);
+      print('Did send data on the stream');
+    });
+  }
+
+  settingWorkingArea() {
+    data = "area-" + width + "-" + hieght;
+    web_socket();
+  }
+
+  startWorking() {
+    data = "start";
+    web_socket();
+  }
+
+  stopWorking() {
+    data = "stop";
+    web_socket();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Automatic Control', 
+          'Automatic Control',
           style: TextStyle(
             fontSize: 24.0,
           ),
@@ -19,20 +63,18 @@ class Automatic extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-             Padding(
+            Padding(
               padding: EdgeInsets.fromLTRB(40, 10, 40, 10),
               child: TextField(
                 obscureText: false,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Point 1: ',
+                  labelText: 'Width(cm)  : ',
                 ),
-                // onSubmitted: (pos1) {
-                //   print("SUBMIT");
-                //   List<String> splitPos1 = pos1.split(",");
-                //   setArea(0, double.parse(splitPos1[0]),
-                //       double.parse(splitPos1[1]));
-                // },
+                onChanged: (w) {
+                  print(w);
+                  width = w;
+                },
               ),
             ),
             Padding(
@@ -41,28 +83,12 @@ class Automatic extends StatelessWidget {
                 obscureText: false,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Point 2: ',
+                  labelText: 'Hieght(cm) : ',
                 ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(40, 10, 40, 10),
-              child: TextField(
-                obscureText: false,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Point 3: ',
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(40, 10, 40, 10),
-              child: TextField(
-                obscureText: false,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Point 4: ',
-                ),
+                onChanged: (h) {
+                  print(h);
+                  hieght = h;
+                },
               ),
             ),
             Padding(
@@ -71,12 +97,7 @@ class Automatic extends StatelessWidget {
                 width: 300,
                 height: 70,
                 child: RaisedButton(
-                  onPressed: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => Automatic() )
-                    // );
-                  },
+                  onPressed: settingWorkingArea,
                   child: Text(
                     'Setting Working Area',
                     style: TextStyle(
@@ -88,9 +109,8 @@ class Automatic extends StatelessWidget {
                   color: Colors.green[50],
                   elevation: 8,
                   shape: new RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(10.0),
-                    side: BorderSide(color: Colors.green[900], width: 3)
-                  ),
+                      borderRadius: new BorderRadius.circular(10.0),
+                      side: BorderSide(color: Colors.green[900], width: 3)),
                 ),
               ),
             ),
@@ -100,12 +120,7 @@ class Automatic extends StatelessWidget {
                 width: 300,
                 height: 70,
                 child: RaisedButton(
-                  onPressed: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => Automatic() )
-                    // );
-                  },
+                  onPressed: startWorking,
                   child: Text(
                     'Start Working',
                     style: TextStyle(
@@ -117,9 +132,8 @@ class Automatic extends StatelessWidget {
                   color: Colors.green[900],
                   elevation: 8,
                   shape: new RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(10.0),
-                    side: BorderSide(color: Colors.green[900], width: 3)
-                  ),
+                      borderRadius: new BorderRadius.circular(10.0),
+                      side: BorderSide(color: Colors.green[900], width: 3)),
                 ),
               ),
             ),
@@ -129,12 +143,7 @@ class Automatic extends StatelessWidget {
                 width: 300,
                 height: 70,
                 child: RaisedButton(
-                  onPressed: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => Automatic() )
-                    // );
-                  },
+                  onPressed: stopWorking,
                   child: Text(
                     'Stop Working',
                     style: TextStyle(
@@ -146,9 +155,8 @@ class Automatic extends StatelessWidget {
                   color: Colors.red[50],
                   elevation: 8,
                   shape: new RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(10.0),
-                    side: BorderSide(color: Colors.red[900], width: 3)
-                  ),
+                      borderRadius: new BorderRadius.circular(10.0),
+                      side: BorderSide(color: Colors.red[900], width: 3)),
                 ),
               ),
             ),
@@ -158,4 +166,3 @@ class Automatic extends StatelessWidget {
     );
   }
 }
-      

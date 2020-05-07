@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:agrotrac_control/pages/connectings.dart';
 import 'package:agrotrac_control/pages/automatic.dart';
 import 'package:agrotrac_control/pages/manual.dart';
+import 'package:agrotrac_control/pages/setting.dart';
 
 
 class Homepage extends StatelessWidget {
@@ -11,7 +12,7 @@ class Homepage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Agrotrac Controller v.0.2', style: TextStyle(
+        title: Text('Agrotrac Controller v.2.0', style: TextStyle(
           fontSize: 24.0,
         ),),
         backgroundColor: Color(0xFF42BE63),
@@ -119,10 +120,10 @@ class Homepage extends StatelessWidget {
                 height: 100,
                 child: RaisedButton(
                   onPressed: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(builder: (context) => Map() )
-                    // );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Setting() )
+                    );
                   },
                   child: Text(
                     'Setting',

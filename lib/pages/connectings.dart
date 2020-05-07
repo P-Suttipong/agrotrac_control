@@ -41,7 +41,7 @@ class UpdateTextState extends State {
   String textHolder = 'Disconnect';
 
 
-  final channel = IOWebSocketChannel.connect("ws://203.150.243.132:17711");
+  final channel = IOWebSocketChannel.connect("ws://203.150.107.176:17711");
 
   web_socket() async {
     var data = "connectFromApp";
@@ -66,7 +66,7 @@ class UpdateTextState extends State {
             }
           }
         });
-        updSocket.send(dataToSend, new InternetAddress('203.150.243.132'), 17711);
+        updSocket.send(dataToSend, new InternetAddress('203.150.107.176'), 17711);
         print('Did send data on the stream');
       }
     );

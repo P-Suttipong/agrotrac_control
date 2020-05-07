@@ -32,9 +32,10 @@ class UpdateText extends StatefulWidget {
 class UpdateTextState extends State {
   String textHolder = 'Disconnect';
   var distance = "";
+  var degree = "";
   var data = "";
 
-  final channel = IOWebSocketChannel.connect("ws://203.150.243.132:17711");
+  final channel = IOWebSocketChannel.connect("ws://203.150.107.176:17711");
 
   web_socket() async {
     var codec = new Utf8Codec();
@@ -49,35 +50,49 @@ class UpdateTextState extends State {
           dg.data.forEach((x) => print(x.toString()));
         }
       });
-      updSocket.send(dataToSend, new InternetAddress('203.150.243.132'), 17711);
+      updSocket.send(dataToSend, new InternetAddress('203.150.107.176'), 17711);
       print('Did send data on the stream');
     });
   }
 
   forward() {
     setState(() {
-     data = "forward";
+      data = "forward-" + distance;
     });
     web_socket();
   }
 
   backward() {
     setState(() {
-     data = "backward";
+      data = "backward-" + distance;
     });
     web_socket();
   }
 
   left() {
     setState(() {
-     data = "left";
+      data = "left-" + degree;
     });
     web_socket();
   }
 
   right() {
     setState(() {
-     data = "right";
+      data = "right-" + degree;
+    });
+    web_socket();
+  }
+
+  servo_up() {
+    setState(() {
+      data = "up";
+    });
+    web_socket();
+  }
+
+  servo_down() {
+    setState(() {
+      data = "down";
     });
     web_socket();
   }
@@ -85,26 +100,26 @@ class UpdateTextState extends State {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            // Padding(
-            //   padding: EdgeInsets.fromLTRB(40, 100, 40, 10),
-            //   child: TextField(
-            //     obscureText: false,
-            //     decoration: InputDecoration(
-            //       border: OutlineInputBorder(),
-            //       labelText: 'Distance: ',
-            //     ),
-            //     onSubmitted: (dist) {
-            //       print(dist);
-            //       setState(() {
-            //         distance = dist;
-            //       });
-            //     },
-            //   ),
-            // ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(40, 100, 40, 10),
+              child: TextField(
+                obscureText: false,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Distance(cm): ',
+                ),
+                onChanged: (dist) {
+                  print(dist);
+                  setState(() {
+                    distance = dist;
+                  });
+                },
+              ),
+            ),
             Row(
               children: [
                 Padding(
@@ -155,16 +170,22 @@ class UpdateTextState extends State {
                 ),
               ],
             ),
-            // Padding(
-            //   padding: EdgeInsets.fromLTRB(40, 50, 40, 10),
-            //   child: TextField(
-            //     obscureText: false,
-            //     decoration: InputDecoration(
-            //       border: OutlineInputBorder(),
-            //       labelText: 'Degree: ',
-            //     ),
-            //   ),
-            // ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(40, 50, 40, 10),
+              child: TextField(
+                obscureText: false,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Angle(degree): ',
+                ),
+                onChanged: (deg) {
+                  print(deg);
+                  setState(() {
+                    degree = deg;
+                  });
+                },
+              ),
+            ),
             Row(
               children: [
                 Padding(
@@ -199,6 +220,56 @@ class UpdateTextState extends State {
                       onPressed: right,
                       child: Text(
                         'Right',
+                        style: TextStyle(
+                          color: Colors.green[900],
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      color: Colors.green[50],
+                      elevation: 8,
+                      shape: new RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(10.0),
+                          side: BorderSide(color: Colors.green[900], width: 3)),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              children: [
+                Padding(
+                  padding: EdgeInsets.fromLTRB(40, 10, 0, 10),
+                  child: SizedBox(
+                    width: 130,
+                    height: 70,
+                    child: RaisedButton(
+                      onPressed: servo_up,
+                      child: Text(
+                        'Servo Up',
+                        style: TextStyle(
+                          color: Colors.green[900],
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      color: Colors.green[50],
+                      elevation: 8,
+                      shape: new RoundedRectangleBorder(
+                          borderRadius: new BorderRadius.circular(10.0),
+                          side: BorderSide(color: Colors.green[900], width: 3)),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(20, 10, 40, 10),
+                  child: SizedBox(
+                    width: 130,
+                    height: 70,
+                    child: RaisedButton(
+                      onPressed: servo_down,
+                      child: Text(
+                        'Servo down',
                         style: TextStyle(
                           color: Colors.green[900],
                           fontSize: 18,
